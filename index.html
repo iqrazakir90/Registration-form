@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Form</title>
+    <style>
+        :root{--accent:#4f46e5;--muted:#6b7280}
+        *{box-sizing:border-box}
+        body{font-family:Arial,Helvetica,sans-serif;background:#f3f4f6;margin:0;padding:24px;display:flex;align-items:center;justify-content:center;min-height:100vh}
+        .card{background:#fff;border-radius:8px;box-shadow:0 6px 18px rgba(15,23,42,.08);max-width:720px;width:100%;padding:24px}
+        h1{margin:0 0 8px;font-size:20px}
+        p.lead{margin:0 0 18px;color:var(--muted)}
+        form .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+        label{display:block;font-size:13px;margin-bottom:6px}
+        input,select,textarea{width:100%;Padding:10px;border:1px solid #e5e7eb;border-radius:6px;font-size:14px}
+        textarea{resize:vertical;min-height:80px}
+        .full{grid-column:1/-1}
+        .actions{display:flex;align-items:center;justify-content:space-between;margin-top:16px}
+        button{background:var(--accent);color:#fff;border:none;padding:10px 16px;border-radius:6px;cursor:pointer}
+        button[disabled]{opacity:.6;cursor:not-allowed}
+        .error{color:#b91c1c;font-size:13px;margin-top:6px}
+        .small{font-size:13px;color:var(--muted)}
+        @media (max-width:640px){.grid{grid-template-columns:1fr}}
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Register</h1>
+        <p class="lead">Create your account — it takes less than a minute.</p>
+
+        <form id="regForm" novalidate>
+            <div class="grid">
+                <div>
+                    <label for="firstName">First name</label>
+                    <input type="text" id="firstName" name="firstName" required>
+                    <div class="error" data-for="firstName"></div>
+                </div>
+                <div>
+                    <label for="lastName">Last name</label>
+                    <input type="text" id="lastName" name="lastName" required>
+                    <div class="error" data-for="lastName"></div>
+                </div>
+
+                <div class="full">
+                    <label for="email">Email address</label>
+                    <input type="email" id="email" name="email" required>
+                    <div class="error" data-for="email"></div>
+                </div>
+
+                <div>
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" minlength="8" required>
+                    <div class="error" data-for="password"></div>
+                </div>
+                <div>
+                    <label for="confirmPassword">Confirm password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required>
+                    <div class="error" data-for="confirmPassword"></div>
+                </div>
+
+                <div>
+                    <label for="phone">Phone (optional)</label>
+                    <input type="tel" id="phone" name="phone" pattern="[0-9+\-()\s]{7,}">
+                    <div class="error" data-for="phone"></div>
+                </div>
+                <div>
+                    <label for="gender">Gender</label>
+                    <select id="gender" name="gender">
+                        <option value="">Prefer not to say</option>
+                        <option>Female</option>
+                        <option>Male</option>
+                        <option>Non-binary</option>
+                    </select>
+                </div>
+
+                <div class="full">
+                    <label for="dob">Date of birth</label>
+                    <input type="date" id="dob" name="dob">
+                </div>
+
+                <div class="full">
+                    <label for="address">Address</label>
+                    <textarea id="address" name="address" placeholder="Street, City, ZIP..."></textarea>
+                </div>
+
+                <div class="full">
+                    <label>
+                        <input type="checkbox" id="terms" name="terms" required>
+                        <span class="small"> I agree to the terms and privacy policy</span>
+                    </label>
+                    <div class="error" data-for="terms"></div>
+                </div>
+
+            </div>
+
+            <div class="actions">
+                <div class="small">Already have an account? <a href="#">Sign in</a></div>
+                <button type="submit" id="submitBtn">Create account</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        (function(){
+            const form = document.getElementById('regForm');
+            const submit = document.getElementById('submitBtn');
+
+            function showError(name, msg){
+                const el = document.querySelector('.error[data-for="'+name+'"]');
+                if(el) el.textContent = msg || '';
+            }
+
+            function clearErrors(){
+                document.querySelectorAll('.error').forEach(e=>e.textContent='');
+            }
+
+            form.addEventListener('submit', function(e){
+                e.preventDefault();
+                clearErrors();
+                let valid = true;
+
+                const firstName = form.firstName.value.trim();
+                const lastName = form.lastName.value.trim();
+                const email = form.email.value.trim();
+                const password = form.password.value;
+                const confirm = form.confirmPassword.value;
+                const phone = form.phone.value.trim();
+                const terms = form.terms.checked;
+
+                if(!firstName){ showError('firstName','First name is required'); valid=false }
+                if(!lastName){ showError('lastName','Last name is required'); valid=false }
+                if(!email){ showError('email','Email is required'); valid=false }
+                else if(!/^\S+@\S+\.\S+$/.test(email)){ showError('email','Enter a valid email'); valid=false }
+
+                if(!password){ showError('password','Password is required'); valid=false }
+                else if(password.length < 8){ showError('password','Password must be at least 8 characters'); valid=false }
+
+                if(password !== confirm){ showError('confirmPassword','Passwords do not match'); valid=false }
+
+                if(phone && !/^[0-9+\-()\s]{7,}$/.test(phone)){ showError('phone','Enter a valid phone number'); valid=false }
+
+                if(!terms){ showError('terms','You must accept terms to continue'); valid=false }
+
+                if(!valid) return;
+
+                submit.disabled = true;
+                submit.textContent = 'Creating...';
+
+                // Simulate sending data — replace with real request
+                setTimeout(()=>{
+                    alert('Account created — this is a demo.');
+                    form.reset();
+                    submit.disabled = false;
+                    submit.textContent = 'Create account';
+                },800);
+            });
+        })();
+    </script>
+</body>
+</html>
